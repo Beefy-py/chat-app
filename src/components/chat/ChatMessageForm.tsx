@@ -7,7 +7,7 @@ import {
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import Loader from "./common/Loader";
+import Loader from "../common/Loader";
 
 type Props = {
   chatId: string;

@@ -10,9 +10,9 @@ import {
 } from "@heroicons/react/24/outline";
 import extendedDayjs from "@/utils/extendedDayjs";
 import Link from "next/link";
-import ChatMessageForm from "@/components/ChatMessageForm";
+import ChatMessageForm from "@/components/chat/ChatMessageForm";
 import { useSession } from "next-auth/react";
-import SignInModal from "@/components/SignInModal";
+import SignInModal from "@/components/auth/SignInModal";
 
 type ChatRouteQuery = {
   chat: string;

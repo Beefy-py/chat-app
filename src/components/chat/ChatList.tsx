@@ -1,7 +1,7 @@
 import React from "react";
 import { api, type RouterOutputs } from "@/utils/api";
 import ChatItem from "./ChatItem";
-import Loader from "./common/Loader";
+import Loader from "../common/Loader";
 import { ArchiveBoxIcon, FolderOpenIcon } from "@heroicons/react/24/outline";
 
 type Chats = RouterOutputs["chat"]["getAll"];

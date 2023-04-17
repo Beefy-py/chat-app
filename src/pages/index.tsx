@@ -1,8 +1,8 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import ChatList from "@/components/ChatList";
-import AuthShowcase from "@/components/AuthShowcase";
-import ChatsHeader from "@/components/ChatsHeader";
+import ChatList from "@/components/chat/ChatList";
+import AuthShowcase from "@/components/auth/AuthShowcase";
+import ChatsHeader from "@/components/chat/ChatsHeader";
 
 const Home: NextPage = () => {
   return (

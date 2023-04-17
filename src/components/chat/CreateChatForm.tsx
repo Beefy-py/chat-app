@@ -3,8 +3,8 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { TRPCClientErrorBase, type TRPCClientError } from "@trpc/client";
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import Loader from "./common/Loader";
 import { useSession } from "next-auth/react";
+import Loader from "../common/Loader";
 
 type Props = {
   setShow: Function;

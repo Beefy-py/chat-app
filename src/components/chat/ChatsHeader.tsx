@@ -2,7 +2,7 @@ import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import CreateChatForm from "./CreateChatForm";
 import { api } from "@/utils/api";
-import Loader from "./common/Loader";
+import Loader from "../common/Loader";
 import { useSession } from "next-auth/react";
 
 const ChatsHeader = () => {
