@@ -8,13 +8,33 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 model Chat {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    max_users Int
-    users User[]
+    maxUsers Int @default(2)
+    users User[] 
+    topic String @default("Random")
+    messageCount Int @default(0)
+    messages Message[]
+    lastMessageDate DateTime @default(now())
+    name String @default("Unnamed Chat")
+    userCount Int @default(0)
+    description String @default("")
+}
+
+model Message{
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    content String
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+    chat Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+    chatId String
+
+    @@index([chatId])
+    @@index([userId])
 }
 
 // Necessary for Next auth
@@ -55,6 +75,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     chats Chat[]
+    messages Message[]
 }
 
 model VerificationToken {
