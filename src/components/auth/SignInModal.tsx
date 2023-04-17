@@ -39,8 +39,8 @@ const SignInModal = ({ setShow }: Props) => {
           </div>
 
           <ul className="m-6 my-4 space-y-3">
-            {providers.map((provider) => (
-              <li>
+            {providers.map((provider, index) => (
+              <li key={`provider-${index}`}>
                 <button
                   className={`${btnClasses} hover:text-emerald-500`}
                   onClick={() => void signIn("discord")}

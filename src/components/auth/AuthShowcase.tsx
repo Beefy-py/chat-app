@@ -26,8 +26,8 @@ const AuthShowcase: React.FC = () => {
       ) : (
         <>
           {sessionData ? (
-            <p className="inline-flex items-center gap-2 text-lg text-gray-800">
-              Logged in as
+            <div className="inline-flex items-center gap-2 text-lg text-gray-800">
+              <p>Logged in as</p>
               <span className="font-semibold text-emerald-800">
                 {sessionData.user?.name}
               </span>
@@ -43,7 +43,7 @@ const AuthShowcase: React.FC = () => {
               ) : (
                 <PhotoIcon className="h-6 w-6" />
               )}
-            </p>
+            </div>
           ) : (
             <p className="font-semibold text-gray-800">Unauthenticated</p>
           )}
