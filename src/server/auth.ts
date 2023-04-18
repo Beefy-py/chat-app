@@ -8,7 +8,6 @@ import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import LinkedInProvider from "next-auth/providers/linkedin";
-import SpotifyProvider from "next-auth/providers/spotify";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "@/env.mjs";
 import { prisma } from "@/server/db";
@@ -73,10 +72,6 @@ export const authOptions: NextAuthOptions = {
     LinkedInProvider({
       clientId: env.LINKEDIN_ID,
       clientSecret: env.LINKEDIN_SECRET,
-    }),
-    SpotifyProvider({
-      clientId: env.SPOTIFY_ID,
-      clientSecret: env.SPOTIFY_SECRET,
     }),
   ],
 };
