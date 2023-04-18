@@ -5,6 +5,7 @@ import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
   PhotoIcon,
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import SignInModal from "./SignInModal";
@@ -13,6 +14,7 @@ import Image from "next/image";
 
 const AuthShowcase: React.FC = () => {
   const { data: sessionData, status } = useSession();
+  console.log(sessionData);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
@@ -33,12 +35,20 @@ const AuthShowcase: React.FC = () => {
               </span>
               {sessionData.user ? (
                 <div className="relative h-7 w-7">
-                  <Image
-                    src={sessionData.user.image!}
-                    fill
-                    className="rounded-md"
-                    alt={sessionData.user.name!}
-                  />
+                  {sessionData.user.image ? (
+                    <Image
+                      src={sessionData.user.image!}
+                      fill
+                      className="rounded-md"
+                      alt={sessionData.user.name!}
+                    />
+                  ) : (
+                    <UserCircleIcon
+                      className={`
+                     text-emerald-800
+                    `}
+                    />
+                  )}
                 </div>
               ) : (
                 <PhotoIcon className="h-6 w-6" />

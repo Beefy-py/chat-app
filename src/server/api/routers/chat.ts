@@ -38,6 +38,29 @@ export const chatRouter = createTRPCRouter({
           },
         },
       });
+
+      if (newChat.userCount === newChat.maxUsers) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "This chat is full.",
+        });
+      }
+
+      // increment userCount
+      try {
+        const chat = await ctx.prisma.chat.update({
+          where: { id: newChat.id },
+          data: { userCount: { increment: 1 } },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            "An unexpected error occurred while trying to increment userCount after joining.",
+          cause: error,
+        });
+      }
+
       return newChat;
     }),
 

@@ -27,9 +27,11 @@ model Message{
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    content String
+    content String @db.LongText
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String
+    userName String @default("Anonymous")
+    userImage String @default("")
     chat Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
     chatId String
 
@@ -49,7 +51,7 @@ model Account {
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String?  @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 

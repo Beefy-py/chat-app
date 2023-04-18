@@ -38,7 +38,6 @@ const CreateChatForm = ({ setShow }: Props) => {
 
   const createChat: SubmitHandler<FormInput> = async (data) => {
     setErrorMessage("");
-    console.log(data);
 
     chatMutation
       .mutateAsync({ ...data, creator: sessionData?.user.id! })

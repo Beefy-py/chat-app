@@ -1,5 +1,6 @@
 import { api } from "@/utils/api";
 import {
+  ExclamationTriangleIcon,
   MapPinIcon,
   PaperClipIcon,
   PhotoIcon,
@@ -39,10 +40,18 @@ const ChatMessageForm = ({ chatId }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const sendMessage: SubmitHandler<FormInput> = async (data) => {
+    const { user } = sessionData!;
+    const { name, id, image } = user;
+
     setErrorMessage("");
     // console.debug("SESSION USER ID", sessionData!.user.id);
-    const message = { ...data, chatId, userId: sessionData!.user.id };
-    console.log(message);
+    const message = {
+      ...data,
+      chatId,
+      userId: id,
+      userName: name!,
+      userImage: image!,
+    };
 
     messageMutation
       .mutateAsync(message)
@@ -66,8 +75,16 @@ const ChatMessageForm = ({ chatId }: Props) => {
             rows={3}
             className="w-full border-0 bg-white px-0 text-sm text-gray-900 outline-none focus:ring-0"
             placeholder="Write a message..."
-            {...register("content")}
+            {...register("content", {
+              required: { value: true, message: "You can't just send nothing" },
+            })}
           ></textarea>
+          {errors.content && (
+            <div className="flex items-center text-red-600">
+              <ExclamationTriangleIcon className="mr-2 h-6 w-6" />
+              <p className="font-semibold">{errors.content.message}</p>
+            </div>
+          )}
         </div>
         <div className="flex items-center justify-between rounded-b-md border-t bg-white px-3 py-2">
           <div className="flex cursor-not-allowed space-x-1 pl-0 sm:pl-2">

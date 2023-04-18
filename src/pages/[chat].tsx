@@ -2,17 +2,17 @@ import Loader from "@/components/common/Loader";
 import { api } from "@/utils/api";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { notFound } from "next/navigation";
 import {
   ArrowLeftIcon,
   ChatBubbleBottomCenterTextIcon,
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import extendedDayjs from "@/utils/extendedDayjs";
 import Link from "next/link";
 import ChatMessageForm from "@/components/chat/ChatMessageForm";
 import { useSession } from "next-auth/react";
 import SignInModal from "@/components/auth/SignInModal";
+import Image from "next/image";
 
 type ChatRouteQuery = {
   chat: string;
@@ -45,23 +45,28 @@ function ChatPage() {
     status === "authenticated" &&
       (sessionData
         ? chatData?.users.find((user) => user.id === sessionData?.user.id)
-        : false)
+        : false) // user joined
   );
 
   const handleJoinGroup = () => {
-    if (status === "authenticated") {
-      setErrorMessage("");
+    if (!chatMutation.isLoading) {
+      if (status === "authenticated") {
+        setErrorMessage("");
 
-      chatMutation
-        .mutateAsync({ chatId: chatData?.id!, userId: sessionData.user.id })
-        .then((res) => {
-          // console.log(res);
-        })
-        .catch((err) => {
-          setErrorMessage("Something went wrong!");
-        });
+        chatMutation
+          .mutateAsync({ chatId: chatData?.id!, userId: sessionData.user.id })
+          .then((res) => {
+            // console.log(res);
+          })
+          .catch((err) => {
+            setErrorMessage("Something went wrong!");
+          });
+      } else {
+        setShowSignInModal(true);
+      }
+    } else {
+      console.warn("Hold on dude...");
     }
-    setShowSignInModal(true);
   };
 
   return (
@@ -94,15 +99,30 @@ function ChatPage() {
                   <div className="grid grid-cols-2 divide-x-2">
                     <div className=" mr-2">
                       <p>{chatData.topic}</p>
-                      <p>members online</p>
                     </div>
                     <div className=" pl-2">
-                      <button
-                        onClick={handleJoinGroup}
-                        className="rounded-md bg-emerald-500 p-0.5 px-2 text-white"
-                      >
-                        Join Group
-                      </button>
+                      {!mayInteractWithChat ? (
+                        <>
+                          {chatData.maxUsers === chatData.userCount ? (
+                            <button className="rounded-sm bg-red-500 p-0.5 px-2 text-white">
+                              Full
+                            </button>
+                          ) : (
+                            <button
+                              onClick={handleJoinGroup}
+                              className="rounded-sm bg-emerald-500 p-0.5 px-2 text-white"
+                            >
+                              {chatMutation.isLoading
+                                ? "Joining. . ."
+                                : "Join Group"}
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <p className="font-semibold italic text-emerald-500">
+                          Joined
+                        </p>
+                      )}
                     </div>
                   </div>
                   <p>{chatData.description}</p>
@@ -110,7 +130,7 @@ function ChatPage() {
               </div>
               {mayInteractWithChat ? (
                 <div className="rounded-md bg-slate-100 p-5">
-                  <div>
+                  <div className="system-message mb-3">
                     <p className="text-center">
                       {extendedDayjs(chatData.createdAt).format("LLLL")}
                     </p>
@@ -123,11 +143,63 @@ function ChatPage() {
                   ) : (
                     <>
                       {messagesData
-                        ? messagesData.map((message) => (
-                            <div key={message.id} className="mt-2">
-                              <p>{message.content}</p>
-                            </div>
-                          ))
+                        ? messagesData.map((message) => {
+                            const isCurrentUser =
+                              message.userId === sessionData?.user.id;
+                            return (
+                              <div
+                                key={message.id}
+                                className={`chat ${
+                                  isCurrentUser ? "chat-end" : "chat-start"
+                                }`}
+                              >
+                                <div className="chat-image avatar">
+                                  {message.userImage ? (
+                                    <div className="relative w-10">
+                                      <Image
+                                        src={message.userImage}
+                                        className="rounded-full"
+                                        fill
+                                        alt={message.userName}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <UserCircleIcon
+                                      className={`h-10 w-10 ${
+                                        isCurrentUser ? "text-emerald-800" : ""
+                                      }`}
+                                    />
+                                  )}
+                                </div>
+
+                                <div
+                                  className={`chat-bubble rounded-md ${
+                                    isCurrentUser
+                                      ? "bg-emerald-200 text-gray-800"
+                                      : ""
+                                  }`}
+                                >
+                                  <div className="chat-header mb-2">
+                                    <time
+                                      className={`${
+                                        isCurrentUser
+                                          ? "text-gray-600"
+                                          : "text-emerald-200"
+                                      } text-xs`}
+                                    >
+                                      {extendedDayjs(message.createdAt).format(
+                                        "HH:mm"
+                                      )}
+                                    </time>
+                                    <p> {message.userName}</p>
+                                  </div>
+                                  <p className={`break-words opacity-80`}>
+                                    {message.content}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })
                         : "ghost town. . ."}
                     </>
                   )}

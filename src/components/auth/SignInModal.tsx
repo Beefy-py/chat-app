@@ -2,7 +2,7 @@ import {
   ArrowRightOnRectangleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import React from "react";
 
 type Props = {
@@ -10,10 +10,12 @@ type Props = {
 };
 
 const SignInModal = ({ setShow }: Props) => {
+  const { data: sessionData } = useSession();
+  console.log(sessionData);
   const btnClasses =
     "rounded-md font-semibold text-gray-800 no-underline transition flex items-center";
 
-  const providers = ["discord", "google", "github"];
+  const providers = ["discord", "google", "github", "linkedin"];
 
   return (
     <div
@@ -43,7 +45,7 @@ const SignInModal = ({ setShow }: Props) => {
               <li key={`provider-${index}`}>
                 <button
                   className={`${btnClasses} hover:text-emerald-500`}
-                  onClick={() => void signIn("discord")}
+                  onClick={() => void signIn(provider)}
                 >
                   <i className={`fa-brands fa-${provider}`}></i>
                   <span className="ml-3 flex-1 whitespace-nowrap">

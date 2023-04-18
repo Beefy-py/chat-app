@@ -1,5 +1,5 @@
 import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import React from "react";
 
 type Props = {
@@ -7,6 +7,9 @@ type Props = {
 };
 
 const SignOutModal = ({ setShow }: Props) => {
+  const { status } = useSession();
+  console.log(status);
+
   return (
     <div
       id="popup-modal"
@@ -37,7 +40,7 @@ const SignOutModal = ({ setShow }: Props) => {
               onClick={() => void signOut()}
               className="mr-2 inline-flex items-center rounded-md bg-red-600 px-5 py-2.5 text-center text-sm font-medium text-white transition hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300"
             >
-              Yes, I'm sure
+              {status === "loading" ? "Signing out. . ." : "Yes, I'm sure"}
             </button>
             <button
               data-modal-hide="popup-modal"

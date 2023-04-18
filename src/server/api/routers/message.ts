@@ -28,6 +28,8 @@ export const messageRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string(),
+        userName: z.string(),
+        userImage: z.string(),
         chatId: z.string(),
         content: z.string(),
       })
