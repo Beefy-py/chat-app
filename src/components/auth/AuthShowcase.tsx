@@ -19,10 +19,10 @@ const AuthShowcase: React.FC = () => {
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const btnClasses =
-    "rounded-md px-8 py-2 font-semibold text-gray-800 no-underline transition flex items-center";
+    "rounded-md sm:px-8 sm:py-2 font-semibold text-gray-800 no-underline transition flex items-center";
 
   return (
-    <div className="mb-2 mt-10 flex w-full items-center justify-between gap-4 pb-2">
+    <div className="mb-2 mt-10 flex w-full flex-col-reverse justify-between gap-4 pb-2 sm:flex-row sm:items-center">
       {status === "loading" ? (
         <Loader text="" />
       ) : (

@@ -12,11 +12,20 @@ export const chatRouter = createTRPCRouter({
     return ctx.prisma.chat.findMany();
   }),
 
-  getOne: publicProcedure.input(z.string()).query(({ ctx, input }) => {
-    return ctx.prisma.chat.findUnique({
+  getOne: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const foundChat = await ctx.prisma.chat.findUnique({
       where: { id: input },
       include: { users: true },
     });
+
+    if (!foundChat) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Chat not found",
+      });
+    }
+
+    return foundChat;
   }),
 
   countChats: publicProcedure.query(({ ctx }) => {

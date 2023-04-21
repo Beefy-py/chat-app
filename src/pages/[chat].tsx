@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import {
   ArrowLeftIcon,
   ChatBubbleBottomCenterTextIcon,
+  ExclamationCircleIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import extendedDayjs from "@/utils/extendedDayjs";
@@ -20,15 +21,18 @@ type ChatRouteQuery = {
 
 function ChatPage() {
   const router = useRouter();
+  const { chat: chatId } = router.query as ChatRouteQuery;
   const utils = api.useContext();
   const { data: sessionData, status } = useSession();
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { chat: chatId } = router.query as ChatRouteQuery;
-
-  const { data: chatData, isLoading: chatLoading } =
-    api.chat.getOne.useQuery(chatId);
+  const {
+    data: chatData,
+    isLoading: chatLoading,
+    isError,
+    error,
+  } = api.chat.getOne.useQuery(chatId);
 
   const { data: messagesData, isLoading: messagesLoading } =
     api.message.getAllInChat.useQuery(chatId);
@@ -69,30 +73,44 @@ function ChatPage() {
     }
   };
 
+  if (isError) {
+    return (
+      <main className="flex  h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="item-center flex text-3xl font-bold text-red-600">
+            <ExclamationCircleIcon className="h-10 w-10" />
+            <p className="ml-2">{error.message}</p>
+          </div>
+          <Link
+            href={"/"}
+            className="group mt-2 flex items-center font-semibold text-emerald-800 hover:text-emerald-600"
+          >
+            <ArrowLeftIcon className="h-7 w-7 transition group-hover:-translate-x-4" />
+            <p>Back to all chats</p>
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="container mx-auto h-screen max-w-screen-md py-20">
+    <main className="container mx-auto h-screen max-w-screen-md px-4 py-20 lg:px-0">
       <Link
         href={"/"}
-        className="group flex items-center font-semibold text-emerald-800"
+        className="group flex items-center font-semibold text-emerald-800 transition hover:text-emerald-700"
       >
         <ArrowLeftIcon className="h-6 w-6 transition group-hover:-translate-x-1" />
         <span className="ml-1 ">Back to chats</span>
       </Link>
       {chatLoading ? (
-        <div className="flex h-full items-center justify-center py-10">
-          <Loader
-            text="Loading Chat. . ."
-            size="4xl"
-            extraClasses="w-12 h-12"
-          />
-        </div>
+        <Loader text="Loading chat. . ." />
       ) : (
         <>
-          {chatData ? (
+          {chatData && (
             <section className="py-20">
               <div className="mb-2 flex flex-col items-center border-b-2 pb-2">
                 <ChatBubbleBottomCenterTextIcon className="h-20 w-20 text-emerald-600" />
-                <h1 className="mb-4 text-center text-4xl font-extrabold tracking-tight text-gray-800 sm:text-6xl">
+                <h1 className="mb-4 text-center text-2xl font-extrabold tracking-tight text-gray-800 sm:text-6xl md:text-4xl">
                   <span className="text-emerald-700">{chatData.name}</span> Chat
                 </h1>
                 <div className="">
@@ -206,7 +224,7 @@ function ChatPage() {
                 </div>
               ) : (
                 <div className="flex h-full items-center justify-center p-6">
-                  <h2 className="text-xl font-semibold">
+                  <h2 className="text-lg font-semibold md:text-xl">
                     Join This Group To Chat
                   </h2>
                 </div>
@@ -214,11 +232,10 @@ function ChatPage() {
 
               {mayInteractWithChat && <ChatMessageForm chatId={chatId} />}
             </section>
-          ) : (
-            "NOTHING"
           )}
         </>
       )}
+
       {showSignInModal && <SignInModal setShow={setShowSignInModal} />}
     </main>
   );
