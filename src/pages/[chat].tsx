@@ -148,9 +148,9 @@ function ChatPage() {
               </div>
               {mayInteractWithChat ? (
                 <div className="rounded-md bg-slate-100 p-5">
-                  <div className="system-message mb-3">
-                    <p className="text-center">
-                      {extendedDayjs(chatData.createdAt).format("LLLL")}
+                  <div className="system-message mb-4">
+                    <p className="text-center italic text-emerald-700">
+                      {extendedDayjs(chatData.createdAt).format("LLL")}
                     </p>
                   </div>
                   {messagesLoading ? (
@@ -164,58 +164,113 @@ function ChatPage() {
                         ? messagesData.map((message) => {
                             const isCurrentUser =
                               message.userId === sessionData?.user.id;
-                            return (
-                              <div
-                                key={message.id}
-                                className={`chat ${
-                                  isCurrentUser ? "chat-end" : "chat-start"
-                                }`}
-                              >
-                                <div className="chat-image avatar">
-                                  {message.userImage ? (
-                                    <div className="relative w-10">
-                                      <Image
-                                        src={message.userImage}
-                                        className="rounded-full"
-                                        fill
-                                        alt={message.userName}
-                                      />
-                                    </div>
-                                  ) : (
-                                    <UserCircleIcon
-                                      className={`h-10 w-10 ${
-                                        isCurrentUser ? "text-emerald-800" : ""
-                                      }`}
-                                    />
-                                  )}
-                                </div>
+                            const currentMessageIndex = messagesData.findIndex(
+                              (m) => m.id === message.id
+                            );
+                            const previousMessage =
+                              messagesData[currentMessageIndex - 1];
 
+                            const currentMessage =
+                              messagesData[currentMessageIndex];
+
+                            // console.log(
+                            //   `Difference between [${
+                            //     currentMessage?.content
+                            //   }] and [${
+                            //     previousMessage?.content
+                            //   }] is ${extendedDayjs(
+                            //     currentMessage?.createdAt
+                            //   ).diff(previousMessage?.createdAt, "h")}`
+                            // );
+
+                            const hourDiffernceBetweenMessages = extendedDayjs(
+                              currentMessage?.createdAt
+                            ).diff(previousMessage?.createdAt, "h");
+
+                            const dayDiffernceBetweenMessages = extendedDayjs(
+                              currentMessage?.createdAt
+                            ).diff(previousMessage?.createdAt, "d");
+
+                            // console.log(
+                            //   `[${currentMessage?.content}] is after [${
+                            //     previousMessage?.content
+                            //   }] ===  ${extendedDayjs(
+                            //     currentMessage?.createdAt
+                            //   ).isAfter(previousMessage?.createdAt, "d")}`
+                            // );
+
+                            const previousMessageWasYesterday = extendedDayjs(
+                              currentMessage?.createdAt
+                            ).isAfter(previousMessage?.createdAt, "d");
+
+                            return (
+                              <>
+                                {previousMessageWasYesterday && (
+                                  <div className="system-message w-full">
+                                    <p className="py-4 text-center italic text-emerald-700">
+                                      {extendedDayjs(
+                                        currentMessage?.createdAt
+                                      ).format("LLLL")}
+                                    </p>
+                                  </div>
+                                )}
                                 <div
-                                  className={`chat-bubble rounded-md ${
-                                    isCurrentUser
-                                      ? "bg-emerald-200 text-gray-800"
-                                      : ""
+                                  key={message.id}
+                                  className={`chat ${
+                                    isCurrentUser ? "chat-end" : "chat-start"
                                   }`}
                                 >
-                                  <div className="chat-header mb-2">
-                                    <time
-                                      className={`${
-                                        isCurrentUser
-                                          ? "text-gray-600"
-                                          : "text-emerald-200"
-                                      } text-xs`}
-                                    >
-                                      {extendedDayjs(message.createdAt).format(
-                                        "HH:mm"
-                                      )}
-                                    </time>
-                                    <p> {message.userName}</p>
+                                  <div className="chat-image avatar">
+                                    {message.userImage ? (
+                                      <div className="relative w-10">
+                                        <Image
+                                          src={message.userImage}
+                                          className="rounded-full"
+                                          fill
+                                          alt={message.userName}
+                                          sizes="(max-width: 768px) 100vw,
+                                                 (max-width: 1200px) 50vw,
+                                                 33vw"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <UserCircleIcon
+                                        className={`h-10 w-10 ${
+                                          isCurrentUser
+                                            ? "text-emerald-800"
+                                            : ""
+                                        }`}
+                                      />
+                                    )}
                                   </div>
-                                  <p className={`break-words opacity-80`}>
-                                    {message.content}
-                                  </p>
+
+                                  <div
+                                    className={`chat-bubble rounded-md ${
+                                      isCurrentUser
+                                        ? "bg-emerald-200 text-gray-800"
+                                        : ""
+                                    }`}
+                                  >
+                                    <div className="chat-header mb-2">
+                                      <time
+                                        className={`${
+                                          isCurrentUser
+                                            ? "text-gray-600"
+                                            : "text-emerald-200"
+                                        } text-xs`}
+                                      >
+                                        {extendedDayjs(
+                                          message.createdAt
+                                        ).format("HH:mm")}
+                                      </time>
+                                      <p> {message.userName}</p>
+                                    </div>
+                                    <p className={`break-words opacity-80`}>
+                                      {message.content}
+                                    </p>
+                                  </div>
                                 </div>
-                              </div>
+                              </>
                             );
                           })
                         : "ghost town. . ."}

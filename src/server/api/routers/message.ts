@@ -32,17 +32,23 @@ export const messageRouter = createTRPCRouter({
         userImage: z.string(),
         chatId: z.string(),
         content: z.string(),
+        lastMessageDate: z.date(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const omitLastMessageDate = (({ lastMessageDate, ...o }) => o)(input);
+
       const newmessage = await ctx.prisma.message.create({
-        data: { ...input },
+        data: { ...omitLastMessageDate },
       });
 
       try {
         const chat = await ctx.prisma.chat.update({
           where: { id: input.chatId },
-          data: { messageCount: { increment: 1 } },
+          data: {
+            messageCount: { increment: 1 },
+            lastMessageDate: input.lastMessageDate,
+          },
         });
       } catch (error) {
         throw new TRPCError({

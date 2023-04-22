@@ -51,6 +51,7 @@ const ChatMessageForm = ({ chatId }: Props) => {
       userId: id,
       userName: name!,
       userImage: image!,
+      lastMessageDate: new Date(),
     };
 
     messageMutation
