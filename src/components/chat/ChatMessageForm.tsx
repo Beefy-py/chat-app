@@ -39,6 +39,8 @@ const ChatMessageForm = ({ chatId }: Props) => {
 
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  const isTyping = api.message.isTyping.useMutation();
+
   const sendMessage: SubmitHandler<FormInput> = async (data) => {
     const { user } = sessionData!;
     const { name, id, image } = user;
@@ -79,6 +81,12 @@ const ChatMessageForm = ({ chatId }: Props) => {
             {...register("content", {
               required: { value: true, message: "You can't just send nothing" },
             })}
+            onKeyDown={async (e) => {
+              isTyping.mutate({ typing: true });
+            }}
+            onBlur={() => {
+              isTyping.mutate({ typing: false });
+            }}
           ></textarea>
           {errors.content && (
             <div className="flex items-center text-red-600">

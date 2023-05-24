@@ -93,6 +93,13 @@ function ChatPage() {
     );
   }
 
+  const [currentlyTyping, setCurrentlyTyping] = useState<string[]>([]);
+  api.message.whoIsTyping.useSubscription(undefined, {
+    onData(data) {
+      setCurrentlyTyping(data);
+    },
+  });
+
   return (
     <main className="container mx-auto h-screen max-w-screen-md px-4 py-20 lg:px-0">
       <Link
@@ -149,7 +156,7 @@ function ChatPage() {
               {mayInteractWithChat ? (
                 <div className="rounded-md bg-slate-100 p-5">
                   <div className="system-message mb-4">
-                    <p className="text-center italic text-emerald-700">
+                    <p className="text-center font-semibold italic text-emerald-700">
                       {extendedDayjs(chatData.createdAt).format("LLL")}
                     </p>
                   </div>
@@ -160,8 +167,9 @@ function ChatPage() {
                     />
                   ) : (
                     <>
-                      {messagesData
-                        ? messagesData.map((message) => {
+                      {messagesData ? (
+                        <>
+                          {messagesData.map((message) => {
                             const isCurrentUser =
                               message.userId === sessionData?.user.id;
                             const currentMessageIndex = messagesData.findIndex(
@@ -207,7 +215,7 @@ function ChatPage() {
                               <>
                                 {previousMessageWasYesterday && (
                                   <div className="system-message w-full">
-                                    <p className="py-4 text-center italic text-emerald-700">
+                                    <p className="py-4 text-center font-semibold italic text-emerald-700">
                                       {extendedDayjs(
                                         currentMessage?.createdAt
                                       ).format("LLLL")}
@@ -272,8 +280,16 @@ function ChatPage() {
                                 </div>
                               </>
                             );
-                          })
-                        : "ghost town. . ."}
+                          })}
+                          <p className="bold h-2 animate-pulse italic text-gray-500 md:h-4">
+                            {currentlyTyping.length
+                              ? `${currentlyTyping.join(", ")} typing...`
+                              : ""}
+                          </p>
+                        </>
+                      ) : (
+                        "ghost town. . ."
+                      )}
                     </>
                   )}
                 </div>

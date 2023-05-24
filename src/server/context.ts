@@ -1,27 +1,28 @@
-import { prisma } from "@/server/db";
-import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { PrismaClient } from "@prisma/client";
+import * as trpc from "@trpc/server";
+import * as trpcNext from "@trpc/server/adapters/next";
+import { NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http";
+import { IncomingMessage } from "http";
 import { getSession } from "next-auth/react";
-/**
- * Defines your inner context shape.
- * Add fields here that the inner context brings.
- */
-export interface CreateInnerContextOptions
-  extends Partial<CreateNextContextOptions> {}
+import ws from "ws";
 
 /**
- * Inner context. Will always be available in your procedures, in contrast to the outer context.
- *
- * Also useful for:
- * - testing, so you don't have to mock Next.js' `req`/`res`
- * - tRPC's `createSSGHelpers` where we don't have `req`/`res`
- *
- * @see https://trpc.io/docs/context#inner-and-outer-context
+ * Creates context for an incoming request
+ * @link https://trpc.io/docs/context
  */
-export async function createInnerTRPCContext(opts: CreateInnerContextOptions) {
-  const session = await getSession({ req: opts.req });
+export const createContext = async (
+  opts:
+    | trpcNext.CreateNextContextOptions
+    | NodeHTTPCreateContextFnOptions<IncomingMessage, ws>
+) => {
+  const session = await getSession(opts);
+
+  console.log("createContext for", session?.user?.name ?? "unknown user");
+
   return {
-    prisma,
     session,
-    ...opts,
+    prisma: new PrismaClient(),
   };
-}
+};
+
+export type Context = trpc.inferAsyncReturnType<typeof createContext>;
